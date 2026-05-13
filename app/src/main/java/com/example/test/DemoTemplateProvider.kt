@@ -5,7 +5,14 @@ import java.io.ByteArrayOutputStream
 class DemoTemplateProvider(private val context: Context) : AbsTemplateProvider() {
     override fun loadTemplate(uri: String, callback: Callback) {
         try {
-            val inputStream = context.assets.open(uri)
+            // Bersihkan uri jika mengandung scheme asset:///
+            val assetPath = if (uri.startsWith("asset:///")) {
+                uri.substring("asset:///".length)
+            } else {
+                uri
+            }
+
+            val inputStream = context.assets.open(assetPath)
             val outputStream = ByteArrayOutputStream()
             inputStream.copyTo(outputStream)
             callback.onSuccess(outputStream.toByteArray())
